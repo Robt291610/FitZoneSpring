@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import tp.fitzone.model.Client;
 import tp.fitzone.service.IClientService;
 
+import java.util.List;
 import java.util.Scanner;
 
 @SpringBootApplication
@@ -58,11 +60,90 @@ public class FitZoneApplication implements CommandLineRunner {
 
     }
 
-    private boolean executeOptions(Scanner scanner, Object option) {
-        return  false;
+    private boolean executeOptions(Scanner scanner, int option) {
+        var exit = false;
+        switch (option) {
+            case 1 -> {
+                logger.info(nl + "***Client List***" + nl);
+                logger.info("Id");
+                List<Client> clients = clientService.listClients();
+                clients.forEach(client -> logger.info(nl + client + nl));
+
+            }
+            case 2 -> {
+                logger.info(nl + "***Get client by id***" + nl);
+                var idClient = Integer.parseInt(scanner.nextLine());
+                Client client  = clientService.getClientById(idClient);
+                if(client != null)
+                    logger.info(nl + "Found client" + client + nl);
+                else
+                    logger.info(nl + "Client not found" + nl);
+
+            }
+            case 3 -> {
+                logger.info(nl + "***Post client***" + nl);
+                logger.info("Name: ");
+                var name = scanner.nextLine();
+                logger.info("Lastname: ");
+                var lastName = scanner.nextLine();
+                logger.info("Membership: ");
+                var membership = Integer.parseInt(scanner.nextLine());
+                var client = new Client();
+                client.setName(name);
+                client.setLastName(lastName);
+                client.setMembership(membership);
+                clientService.saveClient(client);
+                logger.info(nl + "***Saved Client***" + nl);
+            }
+            case 4 -> {
+                logger.info(nl + "***Put client***" + nl);
+                logger.info("Client id: ");
+                var id = Integer.parseInt(scanner.nextLine());
+                Client client = clientService.getClientById(id);
+                if(client != null){
+                    logger.info("Name: ");
+                    var name = scanner.nextLine();
+                    logger.info("Lastname: ");
+                    var lastName = scanner.nextLine();
+                    logger.info("Membership: ");
+                    var membership = Integer.parseInt(scanner.nextLine());
+                    client.setName(name);
+                    client.setLastName(lastName);
+                    client.setMembership(membership);
+                    clientService.saveClient(client);
+                    logger.info(nl + "***Saved Client***" + nl + nl);
+                }
+                else {
+                    logger.info(nl + "***Client not found" + nl);
+                }
+
+            }
+            case 5 -> {
+                logger.info(nl + "***Delete client***" + nl);
+                logger.info("Client id: ");
+                var id = Integer.parseInt(scanner.nextLine());
+                Client client = clientService.getClientById(id);
+                if(client != null){
+                    clientService.deleteClient(id);
+                    logger.info("The client was deleted" + nl + nl);
+                }
+                else{
+                    logger.info(nl + "***Client not found" + nl);
+                }
+            }
+            case 6 -> {
+                logger.info(nl + "***Good bye" + nl + nl);
+                exit = true;
+            }
+            default -> {
+                logger.info(nl + "***Invalid option" + nl);
+            }
+
+        }
+        return false;
     }
 
-    private Object showMenu(Scanner scanner) {
+    private int showMenu(Scanner scanner) {
         logger.info("""
                 Select an option:
                 1. get all clients

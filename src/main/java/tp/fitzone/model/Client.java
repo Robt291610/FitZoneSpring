@@ -19,7 +19,7 @@ public class Client {
     private Integer id;
     private String name;
     private String lastName;
-    private String membership;
+    private int membership;
 
 
 }
