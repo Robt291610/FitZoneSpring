@@ -24,7 +24,8 @@ public class FitZoneForm extends JFrame{
     private JButton deleteButton;
     private JButton clearButton;
     IClientService clientService;
-    private DefaultTableModel model; // handle table objects
+    private DefaultTableModel tableModel; // handle table objects
+    private Integer idClient;
 
     @Autowired
     public FitZoneForm(ClientService clientService){
@@ -38,6 +39,8 @@ public class FitZoneForm extends JFrame{
                 loadClickedClient();
             }
         });
+        deleteButton.addActionListener(e -> deleteClient());
+        clearButton.addActionListener(e -> clearForm());
     }
 
     private void initForm(){
@@ -49,17 +52,32 @@ public class FitZoneForm extends JFrame{
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-        this.model = new DefaultTableModel(0, 4);
+        //Allow row selection
+        //this.model = new DefaultTableModel(0, 4);
+
+        //Avoid modify cell values
+        this.tableModel = new DefaultTableModel(0,4){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+
         String[] headers = new String[] {"ID","Name","LastName","Membership"};
-        this.model.setColumnIdentifiers(headers);
-        this.clientTable = new JTable(this.model);
+        this.tableModel.setColumnIdentifiers(headers);
+        this.clientTable = new JTable(this.tableModel);
+
+        //Restrict select more than one client by using Ctrl
+        this.clientTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
         listClients();
     }
 
     /*
     * This will fill the fields on the table, but it can be used to refresh the table*/
     private void listClients(){
-        this.model.setRowCount(0);
+        this.tableModel.setRowCount(0);
         var client = this.clientService.listClients();
         client.forEach(person -> {
             Object[] clientRow = {
@@ -68,7 +86,7 @@ public class FitZoneForm extends JFrame{
                     person.getLastName(),
                     person.getMembership()
             };
-            this.model.addRow(clientRow);
+            this.tableModel.addRow(clientRow);
         });
     }
 
@@ -90,20 +108,57 @@ public class FitZoneForm extends JFrame{
         var name =  nameText.getText();
         var lastName = membershipText.getText();
         var membership = Integer.parseInt(membershipText.getText());
-        var client = new Client();
+        var client = new Client(this.idClient, name, lastName, membership);
+        /*client.setId(idClient);
         client.setName(name);
         client.setLastName(lastName);
-        client.setMembership(membership);
+        client.setMembership(membership);*/
         clientService.saveClient(client);
+        if(this.idClient == null)
+            showMessage("The client was added");
+        else
+            showMessage("The client was updated");
+
         clearForm();
         listClients();
+    }
+
+    private void deleteClient() {
+        //Your code
+        /*if(this.idClient == null){
+            showMessage("Select a client first");
+        }
+        else{
+            clientService.deleteClient(this.idClient);
+            showMessage("The client was removed");
+        }
+        clearForm();
+        listClients();*/
+        var row = clientTable.getSelectedRow();
+        if(row != -1){
+            var idClientStr = clientTable.getModel().getValueAt(row, 0).toString();
+            this.idClient = Integer.parseInt(idClientStr);
+            var client = new Client();
+            client.setId(idClient);
+            clientService.deleteClient(idClient);
+            showMessage("The client with id:" + idClient+ " was removed");
+            clearForm();
+            listClients();
+        }
+
     }
 
     private void loadClickedClient(){
         var row = clientTable.getSelectedRow();
         if(row != -1){
-            var id = clientTable.getModel().getValueAt(row,0).toString();//Continue
-
+            var id = clientTable.getModel().getValueAt(row,0).toString();
+            this.idClient = Integer.parseInt(id);
+            var name = clientTable.getModel().getValueAt(row,1).toString();
+            this.nameText.setText(name);
+            var lastName = clientTable.getModel().getValueAt(row,2).toString();
+            this.lastNameText.setText(lastName);
+            var membership = clientTable.getModel().getValueAt(row,3).toString();
+            this.membershipText.setText(membership);
         }
     }
 
@@ -111,6 +166,9 @@ public class FitZoneForm extends JFrame{
         nameText.setText("");
         lastNameText.setText("");
         membershipText.setText("");
+        this.idClient = null;
+        //Unselect the row
+        this.clientTable.getSelectionModel().clearSelection();
     }
 
     private void showMessage(String message) {
