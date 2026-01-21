@@ -1,20 +1,20 @@
-//package tp.fitzone;
-//
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.CommandLineRunner;
-//import org.springframework.boot.SpringApplication;
-//import org.springframework.boot.autoconfigure.SpringBootApplication;
-//import tp.fitzone.model.Client;
-//import tp.fitzone.service.IClientService;
-//
-//import java.util.List;
-//import java.util.Scanner;
-//
+package tp.fitzone;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import tp.fitzone.model.Client;
+import tp.fitzone.service.IClientService;
+
+import java.util.List;
+import java.util.Scanner;
+
 //@SpringBootApplication
-///*Command Line Runner will help to run the app as a console application*/
-//public class FitZoneApplication implements CommandLineRunner {
+/*Command Line Runner will help to run the app as a console application*/
+public class FitZoneApplication implements CommandLineRunner {
 //    @Autowired
 //    private IClientService clientService;
 //
@@ -38,10 +38,10 @@
 //        logger.info("Finishing Application");
 //    }
 //
-//    @Override
-//    public void run(String... args) throws Exception {
+    @Override
+    public void run(String... args) throws Exception {
 //        fitZoneApp();
-//    }
+    }
 //
 //    private void fitZoneApp() {
 //
@@ -156,4 +156,4 @@
 //                """);
 //        return Integer.parseInt(scanner.nextLine());
 //    }
-//}
+}

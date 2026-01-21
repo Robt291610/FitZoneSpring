@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--html elements will be found in this url
+    faces elements in the next one
+    prime faces in the next-->
+<h:html xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Fit Zone</title>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@latest/primeflex.css"/>
+    </h:head>
+    <h:body>
+
+
+
+
+<!--        This is the navBar in the top-->
+        <div class="card">
+            <h:form id="form-clients">
+                <p:growl id="messages" showDetails="true"/>
+                <div class="card">
+                    <p:menubar>
+                        <p:menuitem value="home" icon="pi pi-fw pi-user"
+                                    update=":form-clients:client-table"
+                                    actionListener="#{IndexController.loadData}"/>
+                        <p:menuitem value="new Client" icon="pi pi-fw pi-plus"
+                                    actionListener="#{IndexController.addClient}"
+                                    update=":modal-form:client-window"
+                                    oncomplete="PF('clientModalWindow').show()"/>
+                    </p:menubar>
+                </div>
+
+<!--                here is the most important-->
+<!--                widgetvar is getting the id, but in the java side.
+                    since id = client-table, then update section in the card above will work-->
+                <div class="card">
+                    <p:dataTable value="#{indexController.clients}" var="client"
+                                 id="client-table" widgetVar="clientTable">
+                        <f:facet name="header">
+                            <!--        Title div-->
+                            <div class="flex justify-content-center flex-wrap
+                                    card-container yellow-container">
+                                <div class="flex align-items-center justify-content-center
+                            w-20rem h-4rem bg-yellow-500 font-bold
+                            text-gray-900 border-round m-2">
+                                    <h3>Fit Zone</h3>
+                                </div>
+                            </div>
+                        </f:facet>
+<!--                        columns-->
+                        <p:column headerText="Id">
+                            <h:outputText value="#{client.id}"/>
+                        </p:column>
+
+                        <p:column headerText="Name">
+                            <h:outputText value="#{client.name}"/>
+                        </p:column>
+
+                        <p:column headerText="Last Name">
+                            <h:outputText value="#{client.lastName}"/>
+                        </p:column>
+
+                        <p:column headerText="Membership">
+                            <h:outputText value="#{client.membership}"/>
+                        </p:column>
+
+                    </p:dataTable>
+                </div>
+            </h:form>
+
+
+
+
+
+<!--            this is only for dialog box fields
+                 widgetVar is the dialog name-->
+            <h:form id="modal-form">
+                <p:dialog header="client detail" showEffect="fade"
+                          modal="true" widgetVar="clientModalWindow"
+                          responsive="true">
+                    <p:outputPanel id="client-window" class="ui-fluid">
+                        <div class="field">
+                            <p:outputLabel for="name">Name</p:outputLabel>
+                            <p:inputText id="name"
+                                         value="#{IndexController.selectedClient.name}"
+                                         required="true"/>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="lastName">last Name</p:outputLabel>
+                            <p:inputText id="lastName"
+                                         value="#{IndexController.selectedClient.lastName}"/>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="membership">Membership</p:outputLabel>
+                            <p:inputNumber id="membership"
+                                           value="#{IndexController.selectedClient.membership}"
+                                            required="true"/>
+                        </div>
+                    </p:outputPanel>
+
+<!--                    this is the footer @this mean this window
+                        this is the footer section-->
+                    <f:facet name="footer">
+                        <p:commandButton value="Save" icon="pi pi-check"
+                                         process="client-window @this"
+                                         actionListener="#{IndexController.addClient}"/>
+                        <p:commandButton value="Cancel" icon="pi pi-times"
+                                         onclick="PF('clientModalWindow').hide()"
+                                         class="ui-button-secondary" type="button"/>
+                    </f:facet>
+                </p:dialog>
+            </h:form>
+
+
+
+
+
+
+        </div>
+    </h:body>
+</h:html>
+
+
+
+
+
