@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--html elements will be found in this url
-    faces elements in the next one
+    jsf behavior elements in the next one
     prime faces in the next-->
 <h:html xmlns:h="http://xmlns.jcp.org/jsf/html"
         xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -22,9 +22,9 @@
                     <p:menubar>
                         <p:menuitem value="home" icon="pi pi-fw pi-user"
                                     update=":form-clients:client-table"
-                                    actionListener="#{IndexController.loadData}"/>
+                                    actionListener="#{indexController.loadData()}"/>
                         <p:menuitem value="new Client" icon="pi pi-fw pi-plus"
-                                    actionListener="#{IndexController.addClient}"
+                                    actionListener="#{indexController.addClient()}"
                                     update=":modal-form:client-window"
                                     oncomplete="PF('clientModalWindow').show()"/>
                     </p:menubar>
@@ -38,6 +38,9 @@
                                  id="client-table" widgetVar="clientTable">
                         <f:facet name="header">
                             <!--        Title div-->
+<!--                            This work because i am using primeflex.
+                                if i am not using primeflex, then you can manually
+                                 add it with library="primeflex"-->
                             <div class="flex justify-content-center flex-wrap
                                     card-container yellow-container">
                                 <div class="flex align-items-center justify-content-center
@@ -64,6 +67,30 @@
                             <h:outputText value="#{client.membership}"/>
                         </p:column>
 
+<!--                        These are the buttons on the right side of the page-->
+                        <p:column>
+                            <p:commandButton value="Edit" icon="pi pi-pencil"
+                                             update=":modal-form:client-window"
+                                             process="@this"
+                                             oncomplete="PF('clientModalWindow').show()"
+                                             class="ui-button-primary"
+                                             style="margin-right: .5rem">
+<!--                                let's set the variable client value to selectedClient-->
+                                <f:setPropertyActionListener
+                                    value="#{client}"
+                                    target="#{indexController.selectedClient}"/>
+                                <p:resetInput target=":modal-form:client-window"/>
+                            </p:commandButton>
+                            <p:commandButton value="Delete" class="ui-button-danger"
+                                             icon="pi pi-trash"
+                                             process="@this"
+                                             oncomplete="PF('deleteClientWindow').show()">
+                                    <f:setPropertyActionListener
+                                        value="#{client}"
+                                        target="#{indexController.selectedClient}"/>
+                            </p:commandButton>
+                        </p:column>
+
                     </p:dataTable>
                 </div>
             </h:form>
@@ -82,18 +109,18 @@
                         <div class="field">
                             <p:outputLabel for="name">Name</p:outputLabel>
                             <p:inputText id="name"
-                                         value="#{IndexController.selectedClient.name}"
+                                         value="#{indexController.selectedClient.name}"
                                          required="true"/>
                         </div>
                         <div class="field">
                             <p:outputLabel for="lastName">last Name</p:outputLabel>
                             <p:inputText id="lastName"
-                                         value="#{IndexController.selectedClient.lastName}"/>
+                                         value="#{indexController.selectedClient.lastName}"/>
                         </div>
                         <div class="field">
                             <p:outputLabel for="membership">Membership</p:outputLabel>
                             <p:inputNumber id="membership"
-                                           value="#{IndexController.selectedClient.membership}"
+                                           value="#{indexController.selectedClient.membership}"
                                             required="true"/>
                         </div>
                     </p:outputPanel>
@@ -103,14 +130,27 @@
                     <f:facet name="footer">
                         <p:commandButton value="Save" icon="pi pi-check"
                                          process="client-window @this"
-                                         actionListener="#{IndexController.addClient}"/>
+                                         actionListener="#{indexController.saveClient}"/>
                         <p:commandButton value="Cancel" icon="pi pi-times"
                                          onclick="PF('clientModalWindow').hide()"
                                          class="ui-button-secondary" type="button"/>
                     </f:facet>
                 </p:dialog>
+<!--                This is the confirm dialog, you can define some properties inside-->
+                <p:confirmDialog widgetVar="deleteClientWindow"
+                                 showEffect="fade" width="300"
+                                 message="Delete the client?"
+                                 header="Confirm" severity="warn">
+                        <p:commandButton value="Yes" icon="pi pi-check"
+                                         process="@this"
+                                         actionListener="#{indexController.deleteClient}"
+                                         oncomplete="PF('deleteClientWindow').hide()"/>
+                    <p:commandButton value="No" type="button"
+                                      styleClass="ui-button-secondary"
+                                      icon="pi pi-times"
+                                      onclick="PF('deleteClientWindow').hide()"/>
+                </p:confirmDialog>
             </h:form>
-
 
 
 
